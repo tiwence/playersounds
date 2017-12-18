@@ -62,6 +62,7 @@ public class MusicService extends Service implements MediaPlayer.OnPreparedListe
 
     public void playSong() {
         final Song playedSong = this.mSongs.get(mSongPos);
+        Log.d("MusicService","Play song : " + playedSong.getmName() + " on " + playedSong.getmStreamingUrl());
         if (playedSong.getmStreamingUrl() == null || "".equals(playedSong.getmStreamingUrl().trim())) {
             ApiUtils.instance().retrieveItunesSongPreviewUrl(playedSong, new OnRetrieveItunesSongPreviewCompleted() {
                 @Override

@@ -78,7 +78,7 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
     public void onItemClick(AdapterView<?> adapterView, View view, int position, long l) {
         Intent intent = new Intent(MainActivity.this, MediaPlayerActivity.class);
         intent.putExtra("songs", mSongList);
-        intent.putExtra("position", position);
+        intent.putExtra("position", (position - 1));
         startActivity(intent);
     }
 }
