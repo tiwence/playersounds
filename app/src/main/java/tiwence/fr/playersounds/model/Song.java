@@ -7,10 +7,10 @@ import java.io.Serializable;
  */
 
 /**
- * Model used for a Song
+ * Song object definition
  */
 public class Song implements Serializable {
-    
+
     private String mId;
     private String mArtistName;
     private String mName;

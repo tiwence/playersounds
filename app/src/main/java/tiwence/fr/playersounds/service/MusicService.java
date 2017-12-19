@@ -104,18 +104,6 @@ public class MusicService extends Service implements MediaPlayer.OnPreparedListe
         }
     }
 
-    public void setSongs(ArrayList<Song> songs) {
-        this.mSongs = songs;
-    }
-
-    public void setSongIndex(int index) {
-        this.mSongPos = index;
-    }
-
-    public void setmContext(Context mContext) {
-        this.mContext = mContext;
-    }
-
     @Override
     public void onCompletion(MediaPlayer mediaPlayer) {
         playNext();
@@ -154,6 +142,18 @@ public class MusicService extends Service implements MediaPlayer.OnPreparedListe
 
     public void setOnUpdateSongInformationsListener(OnUpdateSongInformations listener) {
         this.mOnUpdateSongInformationsListener = listener;
+    }
+
+    public void setSongs(ArrayList<Song> songs) {
+        this.mSongs = songs;
+    }
+
+    public void setSongIndex(int index) {
+        this.mSongPos = index;
+    }
+
+    public void setmContext(Context mContext) {
+        this.mContext = mContext;
     }
 
     public class MusicBinder extends Binder {

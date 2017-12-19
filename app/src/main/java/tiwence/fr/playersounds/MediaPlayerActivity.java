@@ -31,6 +31,7 @@ import tiwence.fr.playersounds.service.MusicService;
  * Created by Tiwence on 17/12/2017.
  */
 
+
 public class MediaPlayerActivity extends AppCompatActivity implements SeekBar.OnSeekBarChangeListener, View.OnClickListener, OnUpdateSongInformations {
 
     private ImageView mArtworkImageView;
@@ -69,6 +70,9 @@ public class MediaPlayerActivity extends AppCompatActivity implements SeekBar.On
         }
     };
 
+    /**
+     * Connection use to bind the MusicService which will handle all MediaPlayer behaviours
+     */
     private ServiceConnection musicConnection = new ServiceConnection() {
 
         @Override
@@ -149,7 +153,7 @@ public class MediaPlayerActivity extends AppCompatActivity implements SeekBar.On
     }
 
     /**
-     * Function used to display current played song to the user
+     * Function used to display current played song informatons to the user
      */
     private void displaySongInformations() {
         Song currentSong = mSongList.get(mPosition);
@@ -175,14 +179,10 @@ public class MediaPlayerActivity extends AppCompatActivity implements SeekBar.On
     }
 
     @Override
-    public void onStartTrackingTouch(SeekBar seekBar) {
-
-    }
+    public void onStartTrackingTouch(SeekBar seekBar) { }
 
     @Override
-    public void onStopTrackingTouch(SeekBar seekBar) {
-
-    }
+    public void onStopTrackingTouch(SeekBar seekBar) { }
 
     @Override
     public void onClick(View view) {
