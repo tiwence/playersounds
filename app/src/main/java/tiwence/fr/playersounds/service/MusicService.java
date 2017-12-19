@@ -97,7 +97,6 @@ public class MusicService extends Service implements MediaPlayer.OnPreparedListe
     private void playSongFinally(Song songToPlay) {
         try {
             mMediaPlayer.reset();
-            mMediaPlayer.setOnPreparedListener(this);
             mMediaPlayer.setDataSource(songToPlay.getmStreamingUrl());
             mMediaPlayer.prepareAsync();
         } catch (Exception e) {

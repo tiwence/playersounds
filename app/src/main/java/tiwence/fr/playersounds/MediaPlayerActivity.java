@@ -62,10 +62,10 @@ public class MediaPlayerActivity extends AppCompatActivity implements SeekBar.On
     private Runnable mUpdateSeekbar = new Runnable() {
         @Override
         public void run() {
-            String currentTime = df.format(new Date(mMusicService.getmMediaPlayer().getCurrentPosition() > 30 ? 0 : mMusicService.getmMediaPlayer().getCurrentPosition()));
-            mSongSeekBar.setProgress(mMusicService.getmMediaPlayer().getCurrentPosition());
+            String currentTime = df.format(new Date(mMusicService.getmMediaPlayer().getCurrentPosition() > 30000 ? 0 : mMusicService.getmMediaPlayer().getCurrentPosition()));
+            mSongSeekBar.setProgress(mMusicService.getmMediaPlayer().getCurrentPosition() > 30000 ? 0 : mMusicService.getmMediaPlayer().getCurrentPosition());
             mCurrentTimeTextView.setText(currentTime);
-            mSeekbarUpdateHandler.postDelayed(this, 900);
+            mSeekbarUpdateHandler.postDelayed(this, 1000);
         }
     };
 
