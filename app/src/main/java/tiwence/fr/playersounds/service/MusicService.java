@@ -1,32 +1,42 @@
 package tiwence.fr.playersounds.service;
 
 import android.app.Service;
+import android.content.Context;
 import android.content.Intent;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.os.Binder;
+import android.os.Handler;
 import android.os.IBinder;
 import android.os.PowerManager;
 import android.support.annotation.Nullable;
 import android.util.Log;
+import android.widget.Toast;
 
 import java.util.ArrayList;
 
+import tiwence.fr.playersounds.MediaPlayerActivity;
+import tiwence.fr.playersounds.R;
 import tiwence.fr.playersounds.listener.OnRetrieveItunesSongPreviewCompleted;
 import tiwence.fr.playersounds.listener.OnUpdateSongInformations;
 import tiwence.fr.playersounds.model.Song;
-import tiwence.fr.playersounds.util.ApiUtils;
+import tiwence.fr.playersounds.manager.ApiManager;
 
 /**
  * Created by Tiwence on 17/12/2017.
  */
 
+/**
+ * Service used to handle all MediaPlayer behaviours asynchronously
+ */
 public class MusicService extends Service implements MediaPlayer.OnPreparedListener, MediaPlayer.OnErrorListener, MediaPlayer.OnCompletionListener {
 
     private MediaPlayer mMediaPlayer;
     private ArrayList<Song> mSongs;
     private int mSongPos;
     private OnUpdateSongInformations mOnUpdateSongInformationsListener;
+
+    private Context mContext;
 
     private final IBinder musicBind = new MusicBinder();
 
@@ -60,18 +70,20 @@ public class MusicService extends Service implements MediaPlayer.OnPreparedListe
         mMediaPlayer.setOnErrorListener(this);
     }
 
+    /**
+     * Method used to play selected song according to his streaming URL or get his streaming URL if it's not already set
+     */
     public void playSong() {
         final Song playedSong = this.mSongs.get(mSongPos);
-        Log.d("MusicService","Play song : " + playedSong.getmName() + " on " + playedSong.getmStreamingUrl());
         if (playedSong.getmStreamingUrl() == null || "".equals(playedSong.getmStreamingUrl().trim())) {
-            ApiUtils.instance().retrieveItunesSongPreviewUrl(playedSong, new OnRetrieveItunesSongPreviewCompleted() {
+            ApiManager.instance().retrieveItunesSongPreviewUrl(mContext, playedSong, new OnRetrieveItunesSongPreviewCompleted() {
                 @Override
-                public void onRetrieveItunesSongPreviewCompleted(Song song) {
+                public void onRetrieveItunesSongPreviewCompleted(final Song song) {
                     playSongFinally(song);
                 }
                 @Override
                 public void onRetrieveItunesSongPreviewError(String message) {
-                    Log.e("MusicService", "Unable to get preview URL for " + playedSong.getmName());
+                    Toast.makeText(mContext, mContext.getText(R.string.error_msg), Toast.LENGTH_SHORT);
                 }
             });
         } else {
@@ -79,16 +91,18 @@ public class MusicService extends Service implements MediaPlayer.OnPreparedListe
         }
     }
 
+    /**
+     * Method used to play selected song according to his streaming URL
+     */
     private void playSongFinally(Song songToPlay) {
         try {
             mMediaPlayer.reset();
-            Log.d("PLAYING", "Song : " + songToPlay.getmName() + " on " + songToPlay.getmStreamingUrl());
+            mMediaPlayer.setOnPreparedListener(this);
             mMediaPlayer.setDataSource(songToPlay.getmStreamingUrl());
+            mMediaPlayer.prepareAsync();
         } catch (Exception e) {
             e.printStackTrace();
-            Log.e("MUSIC SERVICE", "Error setting data source", e);
         }
-        mMediaPlayer.prepareAsync();
     }
 
     public void setSongs(ArrayList<Song> songs) {
@@ -97,6 +111,10 @@ public class MusicService extends Service implements MediaPlayer.OnPreparedListe
 
     public void setSongIndex(int index) {
         this.mSongPos = index;
+    }
+
+    public void setmContext(Context mContext) {
+        this.mContext = mContext;
     }
 
     @Override
@@ -122,12 +140,13 @@ public class MusicService extends Service implements MediaPlayer.OnPreparedListe
 
     @Override
     public boolean onError(MediaPlayer mediaPlayer, int i, int i1) {
-        return false;
+        return true;
     }
 
     @Override
     public void onPrepared(MediaPlayer mediaPlayer) {
         mediaPlayer.start();
+        mOnUpdateSongInformationsListener.onMediaPlayerPrepareCompleted();
     }
 
     public MediaPlayer getmMediaPlayer() {

@@ -24,7 +24,7 @@
             <meta-data android:name="android.app.searchable"
                 android:resource="@xml/searchable" />
         </activity>
-        <activity android:name=".MediaPlayerActivity"></activity>
+        <activity android:name=".MediaPlayerActivity" android:screenOrientation="portrait"></activity>
         <service android:name=".service.MusicService" android:permission="android.permission.WAKE_LOCK"></service>
     </application>
 

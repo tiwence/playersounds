@@ -10,7 +10,9 @@ import android.os.IBinder;
 import android.support.annotation.Nullable;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.View;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.SeekBar;
 import android.widget.TextView;
@@ -37,9 +39,9 @@ public class MediaPlayerActivity extends AppCompatActivity implements SeekBar.On
     private TextView mCurrentTimeTextView;
     private TextView mTotalTimeTextView;
     private SeekBar mSongSeekBar;
-    private ImageView mPlayPauseButton;
-    private ImageView mNextButton;
-    private ImageView mPrevButton;
+    private Button mPlayPauseButton;
+    private Button mNextButton;
+    private Button mPrevButton;
 
     //private MediaPlayer mMediaplayer;
 
@@ -51,15 +53,18 @@ public class MediaPlayerActivity extends AppCompatActivity implements SeekBar.On
     private Intent mPlayIntent;
     private boolean mMusicBound = false;
 
-    private SimpleDateFormat df = new SimpleDateFormat("mm:ss");
+    private SimpleDateFormat df = new SimpleDateFormat("m:ss");
 
+    /**
+     * Handler used to update seekbar according to MediaPlayer progression
+     */
     private Handler mSeekbarUpdateHandler = new Handler();
     private Runnable mUpdateSeekbar = new Runnable() {
         @Override
         public void run() {
+            String currentTime = df.format(new Date(mMusicService.getmMediaPlayer().getCurrentPosition() > 30 ? 0 : mMusicService.getmMediaPlayer().getCurrentPosition()));
             mSongSeekBar.setProgress(mMusicService.getmMediaPlayer().getCurrentPosition());
-            String totalTime = df.format(new Date(mMusicService.getmMediaPlayer().getCurrentPosition()));
-            mCurrentTimeTextView.setText(totalTime);
+            mCurrentTimeTextView.setText(currentTime);
             mSeekbarUpdateHandler.postDelayed(this, 900);
         }
     };
@@ -72,9 +77,11 @@ public class MediaPlayerActivity extends AppCompatActivity implements SeekBar.On
             mMusicService = binder.getService();
             mMusicBound = true;
 
+            mMusicService.setmContext(MediaPlayerActivity.this);
             mMusicService.setOnUpdateSongInformationsListener(MediaPlayerActivity.this);
             mMusicService.setSongs(mSongList);
             mMusicService.setSongIndex(mPosition);
+
             mMusicService.playSong();
 
             mSeekbarUpdateHandler.postDelayed(mUpdateSeekbar, 0);
@@ -141,6 +148,9 @@ public class MediaPlayerActivity extends AppCompatActivity implements SeekBar.On
         super.onDestroy();
     }
 
+    /**
+     * Function used to display current played song to the user
+     */
     private void displaySongInformations() {
         Song currentSong = mSongList.get(mPosition);
         mSongNameTextView.setText(currentSong.getmName());
@@ -149,6 +159,7 @@ public class MediaPlayerActivity extends AppCompatActivity implements SeekBar.On
         mTotalTimeTextView.setText(R.string.placeholder_totaltime);
         Picasso.with(this).load(currentSong.getmArtworkUrl()).placeholder(android.R.drawable.screen_background_dark).into(mArtworkImageView);
 
+        mSongSeekBar.setProgress(0);
         mSongSeekBar.setMax(30000);
 
         //Long secondDuration = currentSong.getmDuration() / 1000;
@@ -179,18 +190,20 @@ public class MediaPlayerActivity extends AppCompatActivity implements SeekBar.On
             case R.id.playPauseButton:
                 if (mMusicService.getmMediaPlayer().isPlaying()) {
                     mMusicService.getmMediaPlayer().pause();
-                    mPlayPauseButton.setImageResource(R.mipmap.ic_mediaplayer_play);
+                    mPlayPauseButton.setBackgroundResource(R.mipmap.ic_mediaplayer_play);
                 } else {
                     mMusicService.getmMediaPlayer().start();
-                    mPlayPauseButton.setImageResource(R.mipmap.ic_mediaplayer_pause);
+                    mPlayPauseButton.setBackgroundResource(R.mipmap.ic_mediaplayer_pause);
                 }
                 break;
             case R.id.mediaPlayerNextButton:
-                mPlayPauseButton.setImageResource(R.mipmap.ic_mediaplayer_pause);
+                mPlayPauseButton.setBackgroundResource(R.mipmap.ic_mediaplayer_pause);
+                mPlayPauseButton.setEnabled(false);
                 mMusicService.playNext();
                 break;
             case R.id.mediaPlayerPrevButton:
-                mPlayPauseButton.setImageResource(R.mipmap.ic_mediaplayer_pause);
+                mPlayPauseButton.setBackgroundResource(R.mipmap.ic_mediaplayer_pause);
+                mPlayPauseButton.setEnabled(false);
                 mMusicService.playPrevious();
                 break;
             default:
@@ -202,5 +215,10 @@ public class MediaPlayerActivity extends AppCompatActivity implements SeekBar.On
     public void onUpdateSongInformations(int currentSongIndex) {
         mPosition = currentSongIndex;
         displaySongInformations();
+    }
+
+    @Override
+    public void onMediaPlayerPrepareCompleted() {
+        mPlayPauseButton.setEnabled(true);
     }
 }

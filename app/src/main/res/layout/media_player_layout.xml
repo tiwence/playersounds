@@ -66,18 +66,18 @@
         app:layout_constraintStart_toEndOf="@+id/mediaPlayerCurrentTime"
         app:layout_constraintTop_toBottomOf="@+id/mediaPlayerArtistName" />
 
-    <ImageView
+    <Button
         android:id="@+id/playPauseButton"
         android:layout_width="85dp"
         android:layout_height="85dp"
         android:layout_marginEnd="8dp"
         android:layout_marginStart="8dp"
         android:layout_marginTop="48dp"
-        android:background="@android:color/transparent"
+        android:enabled="false"
+        android:background="@mipmap/ic_mediaplayer_pause"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/mediaPlayerSeekBar"
-        app:srcCompat="@mipmap/ic_mediaplayer_pause" />
+        app:layout_constraintTop_toBottomOf="@+id/mediaPlayerSeekBar" />
 
     <TextView
         android:id="@+id/mediaPlayerCurrentTime"
@@ -103,27 +103,27 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="@+id/mediaPlayerSeekBar" />
 
-    <ImageView
+    <Button
         android:id="@+id/mediaPlayerNextButton"
-        android:layout_width="wrap_content"
+        android:layout_width="15dp"
         android:layout_height="25dp"
         android:layout_marginBottom="8dp"
         android:layout_marginStart="24dp"
         android:layout_marginTop="8dp"
+        android:background="@mipmap/ic_mediaplayer_next"
         app:layout_constraintBottom_toBottomOf="@+id/playPauseButton"
         app:layout_constraintStart_toEndOf="@+id/playPauseButton"
-        app:layout_constraintTop_toTopOf="@+id/playPauseButton"
-        app:srcCompat="@mipmap/ic_mediaplayer_next" />
+        app:layout_constraintTop_toTopOf="@+id/playPauseButton" />
 
-    <ImageView
+    <Button
         android:id="@+id/mediaPlayerPrevButton"
-        android:layout_width="wrap_content"
+        android:layout_width="15dp"
         android:layout_height="25dp"
         android:layout_marginBottom="8dp"
         android:layout_marginEnd="24dp"
         android:layout_marginTop="8dp"
+        android:background="@mipmap/ic_mediaplayer_prev"
         app:layout_constraintBottom_toBottomOf="@+id/playPauseButton"
         app:layout_constraintEnd_toStartOf="@+id/playPauseButton"
-        app:layout_constraintTop_toTopOf="@+id/playPauseButton"
-        app:srcCompat="@mipmap/ic_mediaplayer_prev" />
+        app:layout_constraintTop_toTopOf="@+id/playPauseButton" />
 </android.support.constraint.ConstraintLayout>

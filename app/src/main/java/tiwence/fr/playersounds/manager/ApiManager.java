@@ -1,5 +1,6 @@
-package tiwence.fr.playersounds.util;
+package tiwence.fr.playersounds.manager;
 
+import android.content.Context;
 import android.os.AsyncTask;
 
 import org.json.JSONArray;
@@ -15,6 +16,7 @@ import okhttp3.MediaType;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
+import tiwence.fr.playersounds.R;
 import tiwence.fr.playersounds.listener.OnRetrieveItunesSearchCompleted;
 import tiwence.fr.playersounds.listener.OnRetrieveItunesSongPreviewCompleted;
 import tiwence.fr.playersounds.listener.OnRetrieveItunesTopChartsCompleted;
@@ -24,9 +26,9 @@ import tiwence.fr.playersounds.model.Song;
  * Created by Tiwence on 14/12/2017.
  */
 
-public class ApiUtils {
+public class ApiManager {
 
-    public static ApiUtils instance;
+    public static ApiManager instance;
     public static final String COUNTRY = Locale.getDefault().getCountry();
 
     private static String mItunesChartBaseURL = "https://rss.itunes.apple.com/api/v1/" + COUNTRY + "/itunes-music/top-songs/all/100/explicit.json";
@@ -41,14 +43,18 @@ public class ApiUtils {
         JSON = MediaType.parse("application/json; charset=utf-8");
     }
 
-    public static ApiUtils instance() {
+    public static ApiManager instance() {
         if (instance == null)
-            instance = new ApiUtils();
+            instance = new ApiManager();
         return instance;
     }
 
 
-    public void retrieveItunesTopMusicCharts(final OnRetrieveItunesTopChartsCompleted listener) {
+    /**
+     * Function used to retrieve top 100 songs from Itunes Music Store
+     * @param listener callback
+     */
+    public void retrieveItunesTopMusicCharts(final Context context,final OnRetrieveItunesTopChartsCompleted listener) {
 
         new AsyncTask<Void, Void, ArrayList<Song>>() {
             @Override
@@ -59,7 +65,7 @@ public class ApiUtils {
                     Response response = null;
                     response = mHttpClient.newCall(request).execute();
                     String jsonString = response.body().string();
-                    return ModelUtils.instance().parseItunesChartsSongs(jsonString);
+                    return DataManager.instance().parseItunesJSON(jsonString);
                 } catch (IOException e) {
                     e.printStackTrace();
                 } catch (JSONException e) {
@@ -74,13 +80,18 @@ public class ApiUtils {
                 if (songs != null) {
                     listener.onRetrieveItunesTopChartsCompleted(songs);
                 } else {
-                    listener.onRetrieveItunesTopChartsError("Problem occured");
+                    listener.onRetrieveItunesTopChartsError(context.getResources().getString(R.string.error_msg));
                 }
             }
         }.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
     }
 
-    public void retrieveItunesSearchMusic(final String query, final OnRetrieveItunesSearchCompleted listener) {
+    /**
+     * Function used to search user query on Itunes music API
+     * @param query query ask by the user
+     * @param listener callback
+     */
+    public void retrieveItunesSearchMusic(final Context context, final String query, final OnRetrieveItunesSearchCompleted listener) {
 
         new AsyncTask<Void, Void, ArrayList<Song>>() {
             @Override
@@ -91,7 +102,7 @@ public class ApiUtils {
                     Response response = null;
                     response = mHttpClient.newCall(request).execute();
                     String jsonString = response.body().string().replaceAll("\n", "");
-                    return ModelUtils.instance().parseItunesSearchSongs(jsonString);
+                    return DataManager.instance().parseItunesJSON(jsonString);
                 } catch (IOException e) {
                     e.printStackTrace();
                 } catch (JSONException e) {
@@ -106,14 +117,19 @@ public class ApiUtils {
                 if (songs != null) {
                     listener.onRetrieveItunesSearchCompleted(songs);
                 } else {
-                    listener.onRetrieveItunesSearchError("Problem occured");
+                    listener.onRetrieveItunesSearchError(context.getResources().getString(R.string.error_msg));
                 }
             }
         }.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
 
     }
 
-    public void retrieveItunesSongPreviewUrl(final Song song, final OnRetrieveItunesSongPreviewCompleted listener) {
+    /**
+     * Function used to retrieve preview streaming URL from a specific song
+     * @param song song to fill with more informations
+     * @param listener callback
+     */
+    public void retrieveItunesSongPreviewUrl(final Context context, final Song song, final OnRetrieveItunesSongPreviewCompleted listener) {
 
         new AsyncTask<Void, Void, Song>() {
             @Override
@@ -145,7 +161,7 @@ public class ApiUtils {
                 if (song != null) {
                     listener.onRetrieveItunesSongPreviewCompleted(song);
                 } else {
-                    listener.onRetrieveItunesSongPreviewError("Problem occured");
+                    listener.onRetrieveItunesSongPreviewError(context.getResources().getString(R.string.error_msg));
                 }
             }
         }.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);

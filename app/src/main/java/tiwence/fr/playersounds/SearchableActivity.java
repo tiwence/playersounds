@@ -22,7 +22,7 @@ import java.util.ArrayList;
 import tiwence.fr.playersounds.adapter.SongAdapter;
 import tiwence.fr.playersounds.listener.OnRetrieveItunesSearchCompleted;
 import tiwence.fr.playersounds.model.Song;
-import tiwence.fr.playersounds.util.ApiUtils;
+import tiwence.fr.playersounds.manager.ApiManager;
 
 /**
  * Created by Tiwence on 15/12/2017.
@@ -75,10 +75,9 @@ public class SearchableActivity extends AppCompatActivity implements ListView.On
             if (!"".equals(query.trim())) {
                 CharSequence searchQuery = Html.fromHtml(getResources().getString(R.string.search_results, query));
                 mHeaderTextView.setText(searchQuery);
-                ApiUtils.instance().retrieveItunesSearchMusic(query.trim(), new OnRetrieveItunesSearchCompleted() {
+                ApiManager.instance().retrieveItunesSearchMusic(this, query.trim(), new OnRetrieveItunesSearchCompleted() {
                     @Override
                     public void onRetrieveItunesSearchCompleted(ArrayList<Song> songList) {
-                        Log.d("ITUNES RESULTS", "LIST : " + songList.size());
                         mSongList = songList;
                         mSongsListView.setAdapter(new SongAdapter(SearchableActivity.this, mSongList));
                     }
@@ -86,7 +85,7 @@ public class SearchableActivity extends AppCompatActivity implements ListView.On
                     @Override
                     public void onRetrieveItunesSearchError(String message) {
                         Toast.makeText(SearchableActivity.this
-                                , "ERROR " + message, Toast.LENGTH_SHORT);
+                                , message, Toast.LENGTH_SHORT);
                     }
                 });
             }

@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.constraint.ConstraintLayout;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -18,7 +19,7 @@ import java.util.ArrayList;
 import tiwence.fr.playersounds.adapter.SongAdapter;
 import tiwence.fr.playersounds.listener.OnRetrieveItunesTopChartsCompleted;
 import tiwence.fr.playersounds.model.Song;
-import tiwence.fr.playersounds.util.ApiUtils;
+import tiwence.fr.playersounds.manager.ApiManager;
 
 public class MainActivity extends AppCompatActivity implements AdapterView.OnItemClickListener {
 
@@ -38,7 +39,7 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
         mSongsListView.addHeaderView(headerLayout);
 
         //Get top 100 from iTunes  music store
-        ApiUtils.instance().retrieveItunesTopMusicCharts(new OnRetrieveItunesTopChartsCompleted() {
+        ApiManager.instance().retrieveItunesTopMusicCharts(this, new OnRetrieveItunesTopChartsCompleted() {
             @Override
             public void onRetrieveItunesTopChartsCompleted(ArrayList<Song> songList) {
                 mSongList = songList;
@@ -47,8 +48,8 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
 
             @Override
             public void onRetrieveItunesTopChartsError(String message) {
-                Toast.makeText(MainActivity.this
-                        , "ERROR " + message, Toast.LENGTH_SHORT);            }
+                Toast.makeText(MainActivity.this , message, Toast.LENGTH_SHORT);
+            }
         });
 
     }

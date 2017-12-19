@@ -6,6 +6,9 @@ import java.io.Serializable;
  * Created by Tiwence on 14/12/2017.
  */
 
+/**
+ * Model used for a Song
+ */
 public class Song implements Serializable {
     
     private String mId;
